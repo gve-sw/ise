@@ -27,7 +27,7 @@ You will find the corresponding folders for each step.
 
 
 
-##APIs in this project
+##Products in this project
 * [Cisco Identity Services Engine](http://www.cisco.com/c/en/us/products/security/identity-services-engine/index.html)
 
 
@@ -39,5 +39,5 @@ You will find the corresponding folders for each step.
 
 
 
-###Sample Application - CE MPLS Turn-Up Process
-This project will develop a set of tools to turn-up a new MPLS network consisting of NCS 4200s and ASR 9k devices in support of Circuit Emulation circuits running over that MPLS network. The tools will utilize EPN-Ms REST APIs to configure the device by device parameters to allow a network administrator to configure the full network in one shot based on a small set of initial parameters.
+###Sample Application - coming soon
+Coming soon
