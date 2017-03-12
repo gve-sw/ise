@@ -9,12 +9,10 @@ The project is organized in a 3 step process, notably:
 You will find the corresponding folders for each step.
 
 
-
 ###Team Members
 * Mike Castellana
 * Chiara Pietra
 * Katherine Snyder
-
 
 
 ###Coaches/Sponsors
@@ -26,17 +24,14 @@ You will find the corresponding folders for each step.
 * Pedro Castro
 
 
-
 ##Products in this project
 * [Cisco Identity Services Engine](http://www.cisco.com/c/en/us/products/security/identity-services-engine/index.html)
-
 
 
 ###API Documentation
 * [Cisco Identity Services Engine - Reference Guides] (http://www.cisco.com/c/en/us/support/security/identity-services-engine/products-command-reference-list.html)
 * [DevNet pxGrid Resources](https://developer.cisco.com/site/pxgrid/)
 * [Cisco Umbrella Investigate API](https://investigate-api.readme.io/)
-
 
 
 ###Sample Application - coming soon
