@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:guestuser xmlns:ns3="identity.ers.ise.cisco.com">
+<customFields>
+</customFields>
+<guestAccessInfo>
+<fromDate>03/14/2017 12:00</fromDate>
+<location>San Jose</location>
+<toDate>03/19/2017 12:00</toDate>
+<validDays>1</validDays>
+</guestAccessInfo>
+<guestInfo>
+<company>Cisco</company>
+<emailAddress>test@test.com</emailAddress>
+<firstName>John</firstName>
+<lastName>Doe</lastName>
+<notificationLanguage>English</notificationLanguage>
+<phoneNumber>5556667789</phoneNumber>
+<smsServiceProvider>Global Default</smsServiceProvider>
+<userName>pythonGuest2</userName>
+</guestInfo>
+<guestType>Daily (default)</guestType>
+<personBeingVisited>micastel@cisco.com</personBeingVisited>
+<portalId>0d9bca20-6d90-11e5-978e-005056bf2f0a</portalId>
+<reasonForVisit>Test</reasonForVisit>
+</ns3:guestuser>

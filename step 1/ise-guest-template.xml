@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:guestuser xmlns:ns3="identity.ers.ise.cisco.com">
+<customFields>
+</customFields>
+<guestAccessInfo>
+<fromDate></fromDate>
+<location></location>
+<toDate></toDate>
+<validDays></validDays>
+</guestAccessInfo>
+<guestInfo>
+<company></company>
+<emailAddress></emailAddress>
+<firstName></firstName>
+<lastName></lastName>
+<notificationLanguage></notificationLanguage>
+<phoneNumber></phoneNumber>
+<smsServiceProvider></smsServiceProvider>
+<userName></userName>
+</guestInfo>
+<guestType></guestType>
+<personBeingVisited></personBeingVisited>
+<portalId></portalId>
+<reasonForVisit></reasonForVisit>
+</ns3:guestuser>
