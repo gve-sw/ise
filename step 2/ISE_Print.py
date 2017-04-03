@@ -85,6 +85,78 @@ class ISE_Print:
 			id_list.append(str(root[0][count].attrib['id']))
 		return id_list
 
+
+	def recent_approved(self, user, pwd, ip, guest_list):
+		id_list=[]
+		url = "https://"+ip+":9060/ers/config/guestuser?filter=status.EQ.Approved"
+		headers={
+			'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
+			'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
+		}
+		print url
+		response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
+		root = etree.fromstring(str(response.text))
+		if int(root.attrib['total'])!= 0:
+			print "Response:"
+			#print etree.tostring(root, pretty_print=True)
+			print '\n'
+		print
+		print "Number of recent : "+ str(root.attrib['total'])
+		for count in range (0, int(root.attrib['total'])):
+			print str(count+1)+".\t"+"Guest: "+str(root[0][count].attrib['name'])
+			print"\t"+str(root[0][count].tag)+" : "+str(root[0][count].attrib['id'])
+			id_list.append(str(root[0][count].attrib['id']))
+		
+		temp = guest_list
+		
+		for guest in id_list:
+			isOld = False
+			for approved in guest_list:
+				if guest == approved:
+					isOld ==True
+			if isOld == True:
+				temp.remove(guest)
+			else:
+				temp.append(guest)
+
+		return temp
+
+
+	def recent_pending(self, user, pwd, ip, guest_list):
+		id_list=[]
+		url = "https://"+ip+":9060/ers/config/guestuser?filter=status.EQ.Pending"
+		headers={
+			'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
+			'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
+		}
+		print url
+		response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
+		root = etree.fromstring(str(response.text))
+		if int(root.attrib['total'])!= 0:
+			print "Response:"
+			#print etree.tostring(root, pretty_print=True)
+			print '\n'
+		print
+		print "Number of recent : "+ str(root.attrib['total'])
+		for count in range (0, int(root.attrib['total'])):
+			print str(count+1)+".\t"+"Guest: "+str(root[0][count].attrib['name'])
+			print"\t"+str(root[0][count].tag)+" : "+str(root[0][count].attrib['id'])
+			id_list.append(str(root[0][count].attrib['id']))
+		
+		temp = guest_list
+		
+		for guest in id_list:
+			isOld = False
+			for pending in guest_list:
+				if guest == pending:
+					isOld ==True
+			if isOld == True:
+				temp.remove(guest)
+			else:
+				temp.append(guest)
+
+		return id_list
+
 	def guest_user_by_id(self, user, pwd, ip, id_list):
 		info_list=[]
 		file = open('ise-out.txt', 'w')
