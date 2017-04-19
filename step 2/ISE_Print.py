@@ -51,21 +51,21 @@ class ISE_Print:
 		year = time_s[2:4]
 		month = time_s[5:7]
 		day = time_s[8:10]
-		if int(time_s[11:13])+4 == 12:
-			hh = str(int(time_s[11:13])+4)
-		elif (int(time_s[11:13])+4)%12 < 10:
-			hh = '0'+str((int(time_s[11:13])+4)%12)
+		if int(time_s[11:13]) == 12:
+			hh = str(int(time_s[11:13]))
+		elif (int(time_s[11:13]))%12 < 10:
+			hh = '0'+str((int(time_s[11:13]))%12)
 		else:
-			hh = str((int(time_s[11:13])+4)%12)
+			hh = str((int(time_s[11:13]))%12)
 		mm = time_s[14:16]
 		ss = time_s[17:19]
 		new_time= day+dash+abbrv[month]+dash+year+space+hh+dot+mm#+dot+ss
 
 		return new_time
 
-	def recent_guests(self, user, pwd, ip, tme):
+	def recent_guests(self, user, pwd, ip, master_list):
 		id_list=[]
-		url = "https://"+ip+":9060/ers/config/guestuser?filter=creationTime.STARTSW."+tme
+		url = "https://"+ip+":9060/ers/config/guestuser?filter=status.EQ.PENDING_APPROVAL"
 		headers={
 			'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
 			'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
@@ -82,7 +82,9 @@ class ISE_Print:
 		for count in range (0, int(root.attrib['total'])):
 			print str(count+1)+".\t"+"Guest: "+str(root[0][count].attrib['name'])
 			print"\t"+str(root[0][count].tag)+" : "+str(root[0][count].attrib['id'])
-			id_list.append(str(root[0][count].attrib['id']))
+			if str(root[0][count].attrib['id']) not in master_list:
+				id_list.append(str(root[0][count].attrib['id']))
+				master_list.append(str(root[0][count].attrib['id']))
 		return id_list
 
 
@@ -157,6 +159,31 @@ class ISE_Print:
 
 		return id_list
 
+	def get_user_name(self, user, pwd, ip, id_list):
+		name_list=[]
+		file = open('ise-out.txt', 'w')
+		for resource in id_list:
+			url = "https://"+ip+":9060/ers/config/guestuser/"+resource
+			headers={
+				'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
+				'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
+			}
+			response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
+			root = etree.fromstring(str(response.text))
+			name = str(root[3][3].text)+' '+str(root[3][4].text+' from '+str(root[3][0].text))
+			name_list.append(name)
+		return name_list
+
+	def approve_user_by_id(self, user, pwd, ip, id_list):
+		for resource in id_list:
+			url = "https://"+ip+":9060/ers/config/guestuser/approve/"+resource
+			headers={
+				'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
+				'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
+			}
+			response = requests.request("PUT", url, auth=(user,pwd), headers=headers, verify=False)
+			print response.text
+
 	def guest_user_by_id(self, user, pwd, ip, id_list):
 		info_list=[]
 		file = open('ise-out.txt', 'w')
@@ -167,24 +194,26 @@ class ISE_Print:
 				'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
 			}
 			response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
+			print response.text
 			root = etree.fromstring(str(response.text))
 			print "\n\nResponse:\n"
-			print etree.tostring(root, pretty_print=True)
-			print
-			print (root[3][4].tag, root[3][4].text)
-			print (root[3][5].tag, root[3][5].text)
-			print (root[3][0].tag, root[3][0].text)
-			print '*************'
-			print (root[3][1].tag, root[3][1].text)
-			print '*************'
+			# print etree.tostring(root, pretty_print=True)
+			# print
+			# print (root[3][4].tag, root[3][4].text)
+			# print (root[3][5].tag, root[3][5].text)
+			# print (root[3][0].tag, root[3][0].text)
+			# print '*************'
+			# print (root[3][1].tag, root[3][1].text)
+			# print '*************'
 			# for child in root:
 			# 	for grand in child:
 			# 		print(grand.tag, grand.text)
 			#print
+			file.write(''+str(root[3][3].tag)+' : '+str(root[3][3].text)+'\n')
 			file.write(''+str(root[3][4].tag)+' : '+str(root[3][4].text)+'\n')
-			file.write(''+str(root[3][5].tag)+' : '+str(root[3][5].text)+'\n')
 			file.write(''+str(root[3][0].tag)+' : '+str(root[3][0].text)+'\n')
-			file.write(''+str(root[5].tag)+' : '+str(root[5].text)+'\n')
+			file.write(''+str(root[3][1].tag)+' : '+str(root[3][1].text)+'\n')
+			file.write('\n')
 		file.close()
 
 	def all_guest_users(self, user, pwd, ip):
@@ -227,7 +256,7 @@ class ISE_Print:
 				line = str(line).replace('\n','')
 				pdf.drawString(72, y, str(line))
 			#print line
-			y-=36
+			y-=18
 		file.close
 		pdf.save()
 

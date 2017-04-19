@@ -10,15 +10,15 @@ from lxml import etree
 
 def all_guest_users(user, pwd, ip):
 	""" Queries all registered Guests"""
-		url = "https://"+ip+":9060/ers/config/guestuser/"
-		headers={
-			'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
-			'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
-		}
-		response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
-		root = etree.fromstring(str(response.text))
-		print "\n\nResponse:\n"
-		print etree.tostring(root, pretty_print=True)
+	url = "https://"+ip+":9060/ers/config/guestuser/"
+	headers={
+		'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
+		'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
+	}
+	response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
+	root = etree.fromstring(str(response.text))
+	print "\n\nResponse:\n"
+	print etree.tostring(root, pretty_print=True)
 
 #runtime testing --> only if we call the script directly
 if __name__ == '__main__':

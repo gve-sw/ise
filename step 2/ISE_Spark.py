@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+from ISE_Print import ISE_Print
 
 class ISE_Spark:
 
@@ -25,7 +26,6 @@ class ISE_Spark:
         PAYLOAD = {"title" : name}
 
         room = requests.post(url=URL, json=PAYLOAD, headers=self.HEADERS)
-
     # Testing: check if the request was successful and return the ID assigned to the room
         if room.status_code == 200:
             print("Room %s was created successfully" % name)
@@ -120,28 +120,31 @@ class ISE_Spark:
     # Function approve_pending(self, roomID, pendingUserList)
     # (self, roomID, pendingUserList) = ID returned when calling create_room(name) and list of pending users on ISE
 
-    def approve_pending(self, roomID, pendingUserList):
+    def approve_pending(self, roomID, pendingUserList, pending_names, approved_users):
 
     # lastMessage is a variable where I save the last message in 
 
         lastMessage = self.get_last_message(roomID)
+        print lastMessage
         msg_ID = lastMessage['id']
 
     # The sponsor will be asked for every pending user if he decides to accept or deny access to the network.
     # Once it accepts the first user that asked accesing the network, it will move to next one and so.
-
+        iter = 0
         for user in pendingUserList:
-            message = "Approve user: " + user + "?"
+            message = "Approve user: " + pending_names[iter] + "?"
             self.post_message(roomID, message)
             answered = False
     
             while not(answered):            # While answered == False
                 lastMessage = self.get_last_message(roomID)
+                print lastMessage
                 if not(lastMessage['id'] == msg_ID):
                                             # If lastMessage['id']==msg_ID then the sponsor have not answer yet
                     msg_ID = lastMessage['id']
                     if lastMessage['text'].upper() == "ISE-GUEST Y":
                         #approvedUser(user) # ISE has to approve this guest --> call a function call approvedUser
+                        approved_users.append(user)
                         answered = True
                     elif lastMessage['text'].upper() == "ISE-GUEST N":
                         #deniedUser(user) # ISE has to deny access to this user --> call a function call deniedUser
@@ -151,3 +154,6 @@ class ISE_Spark:
                         self.post_message(roomID, message)
                 else:
                     time.sleep(5)
+            iter = iter+1
+        pendingUserList = []
+        pending_names = []

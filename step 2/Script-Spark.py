@@ -12,18 +12,18 @@ if not ACCESS_TOKEN:
         exit()
 """
 
-roomName = 'ISE-PendingGuest'
-# roomID = create_room(roomName)
+roomName = 'ISE-Test'
+roomID = ISE_Spark.ISE_Spark().create_room(roomName)
 # print(roomID)
 
 # roomID of the Test room created, called ISE-PendingGuest
-roomID = 'Y2lzY29zcGFyazovL3VzL1JPT00vNDlmMTU4ZDAtMTFhMS0xMWU3LTllNjMtYWY1YTJhNDRmYjcw'
+#roomID = 'Y2lzY29zcGFyazovL3VzL1JPT00vNDlmMTU4ZDAtMTFhMS0xMWU3LTllNjMtYWY1YTJhNDRmYjcw'
 
 
 if roomID:
     # email = 'cpietra@cisco.com'
-    # email = 'micastel@cisco.com'
-    # user = add_user(roomID, email)   #add_user() can be True or False
+    email = 'micastel@cisco.com'
+    user = ISE_Spark.ISE_Spark().add_user(roomID, email)   #add_user() can be True or False
     
 #Testing adding a user to the room (sponsor already in the room)
     #if not user:
@@ -43,5 +43,6 @@ if roomID:
 # If there is any user that is waiting to be approved, call the function: approve_pending(roomID,pendingUserList)
 
 listPendingUsers = ['Guest1', 'Guest2']
+listApproved = []
 
 ISE_Spark.ISE_Spark().approve_pending(roomID, listPendingUsers)
