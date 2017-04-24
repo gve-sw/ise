@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+__author__ = "Michael Castellana, Chiara Pietra"
+__email__ = "micastel@cisco.com"
+__status__ = "Development"
+
 import requests, time, sys, platform, datetime
 from lxml import etree
 from reportlab.lib.pagesizes import letter
@@ -9,30 +14,44 @@ class ISE_Print:
 	requests.packages.urllib3.disable_warnings()
 
 	def chron_job(self):
+		"""
+			This method takes no parameters and fabricates the same functionality as a unix based
+			chron job. To avoid security risks with root privelgaes, this method can be used to allow the program
+			to run at only designated time intervals. This uses the datetime module and parses through the
+			current system time, and checks for an equivelency at certain character postions. The position at which
+			the comparison is made will determine the time interval (the lower the indexed position- the greater the
+			time interval)
+		"""
 		while(1):
 			tme = datetime.datetime.now()
+			# test for equivelency can be altered to fit scheduling requirements
 			# if str(tme)[17:19] == '59' and (str(tme)[20:23]) >= '999':
-			# 	print "hit: "+str(tme)
-			# 	time.sleep(.2)
-			if str(tme)[18] == '9' and (str(tme)[20:23]) >= '999':
-				#print "hit [datetime]:\t"+str(tme)
-				#print "hit [convtime]:\t"+str(get_convert_time(tme))
-				#ret_str = str(get_convert_time(self, tme))[:15]
+			if str(tme)[18] == '9' and (str(tme)[20:23]) >= '999': #causes the program to run every 10 seconds
 				time.sleep(.2)
 				return tme
 
 	def wipe_guest(self, user, pwd, ip):
+		"""
+			***FOR TESTING AND DEVELOPMENT ENVIRONMENTS ONLY- THIS METHOD WILL WIPE ENTIRE GUEST DB***
+			Used for testing in environments where guest users are generated durring testing, this method
+			provides an easy way to start with a fresh DB at run time- this is useful for development environments 
+			where a single user can be authenticated mutliple times without having to manually delete guest
+			user information
+		"""
 		print "Wiping Guest Database..."
 		id_list=[]
+		# Quereying entire database
 		url = "https://"+ip+":9060/ers/config/guestuser/"
 		headers={
 			'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
 			'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
 		}
 		response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
+		# represents the xml response as an iterable tree
 		root = etree.fromstring(str(response.text))
 		for count in range (0, int(root.attrib['total'])):
 			id_list.append(str(root[0][count].attrib['id']))
+		# querying each user by id to delete from guest DB
 		for resource in id_list:
 			url = "https://"+ip+":9060/ers/config/guestuser/"+resource
 			headers={
@@ -42,11 +61,19 @@ class ISE_Print:
 			requests.request("DELETE", url, auth=(user,pwd), headers=headers, verify=False)
 
 	def get_convert_time(self, datetime):
+		"""
+			Converts the datetime module string into a string containing the date in the same format as ISE. 
+			ISE represents date and time as 'dd-mon-yy hh.mm.ss' where mon is the three letter abbreviation for the 
+			current month. Used when it is necessary to filter the queried response. It is important to not that ISE
+			uses a 12 hour clock, and datetime uses a 24 hour clock-- so conversion between the two has been accounted for.
+		"""
+		# Dictionary containging numeric to abbreviation conversions
 		abbrv = {'01':'jan', '02':'feb', '03':'mar', '04':'apr', '05':'may', '06':'jun', '07':'jul', '08':'aug', '09':'sep', '10':'oct', '11':'nov', '12':'dec'}
 		dash = '-'
 		dot = '.'
 		space = ' '
 		
+		# parsing through datetime string to convert and reorder values
 		time_s = str(datetime)
 		year = time_s[2:4]
 		month = time_s[5:7]
@@ -63,103 +90,44 @@ class ISE_Print:
 
 		return new_time
 
+
 	def recent_guests(self, user, pwd, ip, master_list):
+		"""
+			Accepts standard arguments (credentials, and management IP address)- also accepts local database of 
+			users that have been previously queried by the program. This master list will keep track of all users
+			that have registered a device with ISE- whether they have been approved by a sponsor or not. This is to 
+			ensure that only the users that have registered since the last query are identified. It does so by requesting 
+			the ISE database of guest users, and filtering the response with only entries that have a status of 'PENDING_APPROVAL'
+		"""
 		id_list=[]
+		#filter the query by the status that we are looking for
 		url = "https://"+ip+":9060/ers/config/guestuser?filter=status.EQ.PENDING_APPROVAL"
 		headers={
 			'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
 			'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
 		}
-		print url
 		response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
 		root = etree.fromstring(str(response.text))
-		if int(root.attrib['total'])!= 0:
-			print "Response:"
-			#print etree.tostring(root, pretty_print=True)
-			print '\n'
-		print
 		print "Number of recent : "+ str(root.attrib['total'])
+		# iterating through the list of returned users
 		for count in range (0, int(root.attrib['total'])):
 			print str(count+1)+".\t"+"Guest: "+str(root[0][count].attrib['name'])
 			print"\t"+str(root[0][count].tag)+" : "+str(root[0][count].attrib['id'])
+			# checking if the user in the response has registered (is in the master list)
 			if str(root[0][count].attrib['id']) not in master_list:
+				#id list will hold the most recent users waiting for approval
 				id_list.append(str(root[0][count].attrib['id']))
 				master_list.append(str(root[0][count].attrib['id']))
 		return id_list
 
 
-	def recent_approved(self, user, pwd, ip, guest_list):
-		id_list=[]
-		url = "https://"+ip+":9060/ers/config/guestuser?filter=status.EQ.Approved"
-		headers={
-			'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
-			'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
-		}
-		print url
-		response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
-		root = etree.fromstring(str(response.text))
-		if int(root.attrib['total'])!= 0:
-			print "Response:"
-			#print etree.tostring(root, pretty_print=True)
-			print '\n'
-		print
-		print "Number of recent : "+ str(root.attrib['total'])
-		for count in range (0, int(root.attrib['total'])):
-			print str(count+1)+".\t"+"Guest: "+str(root[0][count].attrib['name'])
-			print"\t"+str(root[0][count].tag)+" : "+str(root[0][count].attrib['id'])
-			id_list.append(str(root[0][count].attrib['id']))
-		
-		temp = guest_list
-		
-		for guest in id_list:
-			isOld = False
-			for approved in guest_list:
-				if guest == approved:
-					isOld ==True
-			if isOld == True:
-				temp.remove(guest)
-			else:
-				temp.append(guest)
-
-		return temp
-
-
-	def recent_pending(self, user, pwd, ip, guest_list):
-		id_list=[]
-		url = "https://"+ip+":9060/ers/config/guestuser?filter=status.EQ.Pending"
-		headers={
-			'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
-			'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
-		}
-		print url
-		response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
-		root = etree.fromstring(str(response.text))
-		if int(root.attrib['total'])!= 0:
-			print "Response:"
-			#print etree.tostring(root, pretty_print=True)
-			print '\n'
-		print
-		print "Number of recent : "+ str(root.attrib['total'])
-		for count in range (0, int(root.attrib['total'])):
-			print str(count+1)+".\t"+"Guest: "+str(root[0][count].attrib['name'])
-			print"\t"+str(root[0][count].tag)+" : "+str(root[0][count].attrib['id'])
-			id_list.append(str(root[0][count].attrib['id']))
-		
-		temp = guest_list
-		
-		for guest in id_list:
-			isOld = False
-			for pending in guest_list:
-				if guest == pending:
-					isOld ==True
-			if isOld == True:
-				temp.remove(guest)
-			else:
-				temp.append(guest)
-
-		return id_list
-
 	def get_user_name(self, user, pwd, ip, id_list):
+		"""
+			Retrieves all of the names of the registered guests contained in the given list. The function will return
+			a subsequest list of names of guest users whose index will correspond with the entries in the list of user IDs.
+			The guest names will be used when notifying the sponsor through Spark to see whether or not the user should be 
+			approved.
+		"""
 		name_list=[]
 		file = open('ise-out.txt', 'w')
 		for resource in id_list:
