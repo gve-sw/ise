@@ -1,7 +1,24 @@
 #!/usr/bin/env python
 __author__ = "Michael Castellana, Chiara Pietra"
-__email__ = "micastel@cisco.com"
+__email__ = "micastel@cisco.com, cpietra@cisco.com"
 __status__ = "Development"
+
+"""
+WARNING:
+This script is meant for educational purposes only.
+Any use of these scripts and tools is at
+our own risk. There is no guarantee that
+they have been through thorough testing in a
+comparable environment and we are not
+responsible for any damage or data loss
+incurred with their use.
+
+INFORMATION:
+If you have further questions about this API and script, please contact GVE. Here are the contact details:
+   For internal Cisco employees, please contact GVE at http://go2.cisco.com/gve
+   For Cisco partners, please open a case at www.cisco.com/go/ph
+"""
+
 
 import requests, time, sys, platform, datetime
 from lxml import etree
