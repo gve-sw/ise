@@ -5,6 +5,7 @@ __status__ = "Development"
 
 #import necessary libraries
 import requests, sys
+from lxml import etree
 
 
 def wipe_guest(user, pwd, ip):

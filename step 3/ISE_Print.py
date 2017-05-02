@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 __author__ = "Michael Castellana, Chiara Pietra"
-__email__ = "micastel@cisco.com, cpietra@cisco.com"
+__email__ = "micastel@cisco.com, cpietra"
 __status__ = "Development"
 
 """
@@ -117,7 +117,7 @@ class ISE_Print:
 		"""
 		id_list=[]
 		#filter the query by the status that we are looking for
-		url = "https://"+ip+":9060/ers/config/guestuser?filter=status.EQ.PENDING_APPROVAL"
+		url = "https://"+ip+":9060/ers/config/guestuser"#?filter=status.EQ.PENDING_APPROVAL"
 		headers={
 			'Accept': "application/vnd.com.cisco.ise.identity.guestuser.2.0+xml",
 			'Content-Type': 'application/vnd.com.cisco.ise.identity.guestuser.2.0+xml'
@@ -153,7 +153,7 @@ class ISE_Print:
 			}
 			response = requests.request("GET", url, auth=(user,pwd), headers=headers, verify=False)
 			root = etree.fromstring(str(response.text))
-			name = str(root[3][3].text)+' '+str(root[3][4].text+' from '+str(root[3][0].text))
+			name = str(root[3][4].text)+' '+str(root[3][5].text+' from '+str(root[3][0].text))
 			name_list.append(name)
 		return name_list
 
@@ -192,8 +192,8 @@ class ISE_Print:
 			print response.text
 			root = etree.fromstring(str(response.text))
 			print "\n\nResponse:\n"
-			file.write(''+str(root[3][3].tag)+' : '+str(root[3][3].text)+'\n')
 			file.write(''+str(root[3][4].tag)+' : '+str(root[3][4].text)+'\n')
+			file.write(''+str(root[3][5].tag)+' : '+str(root[3][5].text)+'\n')
 			file.write(''+str(root[3][0].tag)+' : '+str(root[3][0].text)+'\n')
 			file.write(''+str(root[3][1].tag)+' : '+str(root[3][1].text)+'\n')
 			file.write('\n')

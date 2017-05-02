@@ -53,7 +53,7 @@ if __name__ == '__main__':
 	user = 'sponsor'
 	pwd  = 'Csap1'
 	ip="198.18.133.27"
-	id_list=["db310740-2534-11e7-a875-005056abfba0"] #this list will be populated programmatically at runtime when in production
+	id_list=["cc916e40-2f58-11e7-a005-005056ad1b3a"] #this list will be populated programmatically at runtime when in production
 
 	try:
 		guest_user_by_id(user, pwd, ip, id_list) 

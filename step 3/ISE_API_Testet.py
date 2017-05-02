@@ -44,14 +44,15 @@ if __name__ == '__main__':
 	masterList = []
 
 	roomName = 'ISE-Test-1'
-	roomID = ISE_Spark.ISE_Spark().create_room(roomName)
 	#toggle and define room id below to utilize pre-existing room containg ISE bot
-	#roomID = ""
+	roomID = ISE_Spark.ISE_Spark().create_room(roomName)
+	# print roomID
+	#roomID = "Y2lzY29zcGFyazovL3VzL1JPT00vM2E2Y2NiMjAtMmY1YS0xMWU3LTg0MjItZWY0MTU3ZjQyOGFi"
 
 	if roomID:
 		#populated the room with desired admins
-    	email = ['cpietra@cisco.com','micastel@cisco.com']
-	    for item in email:
+		email = ['cpietra@cisco.com','micastel@cisco.com']
+		for item in email:
 		    user = ISE_Spark.ISE_Spark().add_user(roomID, item)   #add_user() can be True or False
 	    
 
@@ -74,21 +75,10 @@ if __name__ == '__main__':
 
 			pending_list = ISE_Print.ISE_Print().recent_guests(sponsor_user, pwd, ip, masterList) #query all pending users
 			names = ISE_Print.ISE_Print().get_user_name(sponsor_user, pwd, ip, pending_list) #get the names of the users to send into spark
-			# print names #debugging
-			# print "pending list" #debugging
-			# print pending_list #debugging
-			# print "master" #debugging
-			# print masterList #debugging
-			
-
-			# print 'before: '
-			# print approved_list
 			
 
 			ISE_Spark.ISE_Spark().approve_pending(roomID, pending_list, names, approved_list) #send pending users to sponsor via spark for authentication
 
-			# print "After: "
-			# print approved_list
 
 			ISE_Print.ISE_Print().approve_user_by_id(sponsor_user, pwd, ip, approved_list) #approve all users designated for approval according to sponsor			
 

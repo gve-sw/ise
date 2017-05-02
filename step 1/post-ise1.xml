@@ -3,15 +3,15 @@
 <customFields>
 </customFields>
 <guestAccessInfo>
-<fromDate>04/19/2017 5:00</fromDate>
+<fromDate>05/2/2017 5:00</fromDate>
 <location>San Jose</location>
-<toDate>04/22/2017 12:00</toDate>
+<toDate>05/5/2017 13:00</toDate>
 <validDays>1</validDays>
 </guestAccessInfo>
 <guestInfo>
 <company>Cisco</company>
 <emailAddress>test@test.com</emailAddress>
-<firstName>John</firstName>
+<firstName>MIKE</firstName>
 <lastName>Doe</lastName>
 <notificationLanguage>English</notificationLanguage>
 <phoneNumber>5556667789</phoneNumber>
